@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, send
+import json
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'webble_wobble'
@@ -12,8 +13,9 @@ def index():
 
 
 @io.on('my_event')
-def event_handler(json):
-    print('Event: '+str(json))
+def event_handler(data):
+    parse = json.loads(data)
+    print('Event: '+parse['data'])
 
 
 @io.on('message')

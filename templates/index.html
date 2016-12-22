@@ -10,8 +10,13 @@
         <title>Chat v0.0</title>
     </head>
     <body>
+        <h1>Chat Server</h1>
         <div id="root"></div>
         <script type="text/babel">
+            var socket = io.connect('http://127.0.0.1:5000');
+            socket.on('connect', function(){
+                socket.emit('my_event', '{"data": "User Connected"}');
+            });
 
             class MessageForm extends React.Component {
                 constructor(props){
@@ -32,13 +37,14 @@
 
                 render(){
                     return(
+                        <fieldset>
                         <form onSubmit={this.handleSubmit}>
                         <label>
-                          Message:
+                          Name:
                           <input type="text" value={this.state.value} onChange={this.handleChange} />
                         </label>
-                        <input type="submit" value="Submit" />
                       </form>
+                      </fieldset>
                     );
                 }//render
             }//class
@@ -48,10 +54,7 @@
               document.getElementById('root')
             );
 
-            var socket = io.connect('http://127.0.0.1:5000');
-                socket.on('connect', function(){
-                    socket.emit('my_event', {data: 'User Connected'});
-                });
+
 
         </script>
     </body>
