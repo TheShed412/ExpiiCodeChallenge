@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script src="https://unpkg.com/react@latest/dist/react.js"></script>
+        <script src="https://unpkg.com/react-dom@latest/dist/react-dom.js"></script>
+        <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+
+        <title>Chat v0.0</title>
+    </head>
+    <body>
+        <div id="root"></div>
+        <script type="text/babel">
+
+            class MessageForm extends React.Component {
+                constructor(props){
+                    super(props);
+                    this.state = {value: ''};
+                    this.handleChange = this.handleChange.bind(this);
+                    this.handleSubmit = this.handleSubmit.bind(this);
+                }//constructor
+
+                handleChange(event){
+                    this.setState({value: event.target.value});
+                }//handleChange
+
+                handleSubmit(event){
+                    alert('A message was entered: '+this.state.value);
+                    event.preventDefault();
+                }//handleSubmit
+
+                render(){
+                    return(
+                        <form onSubmit={this.handleSubmit}>
+                        <label>
+                          Message:
+                          <input type="text" value={this.state.value} onChange={this.handleChange} />
+                        </label>
+                        <input type="submit" value="Submit" />
+                      </form>
+                    );
+                }//render
+            }//class
+
+            ReactDOM.render(
+              <MessageForm />,
+              document.getElementById('root')
+            );
+
+            var socket = io.connect('http://127.0.0.1:5000');
+                socket.on('connect', function(){
+                    socket.emit('my_event', {data: 'User Connected'});
+                });
+
+        </script>
+    </body>
+</html>
