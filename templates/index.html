@@ -20,29 +20,48 @@
             class UserList extends React.Component{
                 constructor(props){
                     super(props);
-                    this.state = {value: 'Select user...'};
+                    this.state = {users: []};
+                    this.connected = this.connected.bind(this);
+
                     this.handleChange = this.handleChange.bind(this);
                     this.handleSubmit = this.handleSubmit.bind(this);
+                    this.createSelectedItems = this.createSelectedItems.bind(this);
                 }//constructor
+
+                componentDidMount(){
+                    socket.on('new_user', this.connected);
+                }//componentDidMount
+
+                connected(data){
+                    var newList = this.state.users.slice();
+                    newList.push(data);
+                    this.setState({users: newList});
+                }//connected
+
                 handleChange(pick){
                     this.setState({value:pick.target.value});
                 }//handleChange
                 handleSubmit(event) {
-                    alert("You started a chat with"+this.state.value);
+                    this.setState({value:pick.target.value});
+                    alert("You started a chat with "+this.state.value);
                     event.preventDefault();
                 }//handleSubmit
+
+                createSelectedItems(){
+                    var items = [];
+                    for(var i=0; i<this.state.users.length; i++){
+                        items.push(<option key={i} value={i}>{this.state.users[i]}</option>);
+                        console.log(this.state.users[i]);
+                    }//for
+                    return items;
+                }//createSelectedItems
+
                 render(){
                     return(
                     <div>
                         <label>Start a conversation: </label>
-                        <select value={this.state.value} onChange={this.handleChange}>
-                            {
-                                this.props.users.map((user, i)=>{
-                                    return(
-                                        <option value={user}>{user}</option>
-                                    );
-                                })
-                            }//react
+                        <select onChange={this.handleSubmit}>
+                            {this.createSelectedItems()}
                         </select>
                     </div>
                 )//return
@@ -54,6 +73,7 @@
                     super(props);
                     this.state = {users: [], messages: [], text: ''};
                     this.connected = this.connected.bind(this);
+                    console.log("Chat Constructor");
                 }//constructor
                 componentDidMount(){
                     socket.on('new_user', this.connected);
@@ -64,7 +84,6 @@
                 }//connected
                 render(){
                     var padding = {float:'right'};
-                    console.log(this);
                     return(
                     <div style={padding}><UserList
                         users={this.state.users}
@@ -82,6 +101,7 @@
                 }//constructor
 
                 handleChange(event){
+                    this.setState({submit: false});
                     this.setState({value: event.target.value});
                 }//handleChange
 
@@ -91,20 +111,22 @@
                 }//handleSubmit
 
                 render(){
-                    return(
-                        <form onSubmit={this.handleSubmit}>
-                        <label>
-                          Name:
-                          <input type="text" value={this.state.value} onChange={this.handleChange} />
-                        </label>
-                      </form>
-                    );
+                        return(
+                            <form onSubmit={this.handleSubmit}>
+                            <label>
+                              Name:
+                              <input type="text" value={this.state.value} onChange={this.handleChange} />
+                            </label>
+                          </form>
+                        );
+
                 }//render
+
             }//UserForm
 
             ReactDOM.render(
                 <div>
-                    <UserForm /><Chat />
+                    <UserForm /><UserList />
                 </div>,
               document.getElementById('userForm')
             );
