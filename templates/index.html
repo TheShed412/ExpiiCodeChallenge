@@ -11,14 +11,69 @@
     </head>
     <body>
         <h1>Chat Server</h1>
-        <div id="root"></div>
+        <fieldset>
+            <div id="userForm"></div>
+        </fieldset>
         <script type="text/babel">
             var socket = io.connect('http://127.0.0.1:5000');
-            socket.on('connect', function(){
-                socket.emit('my_event', '{"data": "User Connected"}');
-            });
 
-            class MessageForm extends React.Component {
+            class UserList extends React.Component{
+                constructor(props){
+                    super(props);
+                    this.state = {value: 'Select user...'};
+                    this.handleChange = this.handleChange.bind(this);
+                    this.handleSubmit = this.handleSubmit.bind(this);
+                }//constructor
+                handleChange(pick){
+                    this.setState({value:pick.target.value});
+                }//handleChange
+                handleSubmit(event) {
+                    alert("You started a chat with"+this.state.value);
+                    event.preventDefault();
+                }//handleSubmit
+                render(){
+                    return(
+                    <div>
+                        <label>Start a conversation: </label>
+                        <select value={this.state.value} onChange={this.handleChange}>
+                            {
+                                this.props.users.map((user, i)=>{
+                                    return(
+                                        <option value={user}>{user}</option>
+                                    );
+                                })
+                            }//react
+                        </select>
+                    </div>
+                )//return
+                }//render
+            }//UserList
+
+            class Chat extends React.Component{
+                constructor(props){
+                    super(props);
+                    this.state = {users: [], messages: [], text: ''};
+                    this.connected = this.connected.bind(this);
+                }//constructor
+                componentDidMount(){
+                    socket.on('new_user', this.connected);
+                }//componentDidMount
+
+                connected(data){
+                    this.state.users.push(data);
+                }//connected
+                render(){
+                    var padding = {float:'right'};
+                    console.log(this);
+                    return(
+                    <div style={padding}><UserList
+                        users={this.state.users}
+                    /></div>
+                )//return
+                }//render
+            }//Chat
+
+            class UserForm extends React.Component {
                 constructor(props){
                     super(props);
                     this.state = {value: ''};
@@ -31,30 +86,28 @@
                 }//handleChange
 
                 handleSubmit(event){
-                    alert('A message was entered: '+this.state.value);
+                    socket.emit('add_user', this.state.value);
                     event.preventDefault();
                 }//handleSubmit
 
                 render(){
                     return(
-                        <fieldset>
                         <form onSubmit={this.handleSubmit}>
                         <label>
                           Name:
                           <input type="text" value={this.state.value} onChange={this.handleChange} />
                         </label>
                       </form>
-                      </fieldset>
                     );
                 }//render
-            }//class
+            }//UserForm
 
             ReactDOM.render(
-              <MessageForm />,
-              document.getElementById('root')
+                <div>
+                    <UserForm /><Chat />
+                </div>,
+              document.getElementById('userForm')
             );
-
-
 
         </script>
     </body>
