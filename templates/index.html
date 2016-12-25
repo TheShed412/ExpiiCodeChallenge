@@ -21,18 +21,30 @@
                 constructor(props){
                     super(props);
                     this.state = {users: []};
-                    this.connected = this.connected.bind(this);
+                    socket.emit('request_list');
 
+                    this.componentDidMount = this.componentDidMount.bind(this);
+                    this.addUser = this.addUser.bind(this);
+                    this.sendList = this.sendList.bind(this);
                     this.handleChange = this.handleChange.bind(this);
                     this.handleSubmit = this.handleSubmit.bind(this);
                     this.createSelectedItems = this.createSelectedItems.bind(this);
                 }//constructor
 
                 componentDidMount(){
-                    socket.on('new_user', this.connected);
+                    socket.on('new_user', this.addUser);
+                    socket.on('send_list', this.sendList);
+
+                    socket.on('new_list', (newUserList)=>{
+                        this.setState({users: newUserList});
+                    });
                 }//componentDidMount
 
-                connected(data){
+                sendList(){
+                    socket.emit('list_sent', this.state.users.slice());
+                }//sendList
+
+                addUser(data){
                     var newList = this.state.users.slice();
                     newList.push(data);
                     this.setState({users: newList});
@@ -42,7 +54,7 @@
                     this.setState({value:pick.target.value});
                 }//handleChange
                 handleSubmit(event) {
-                    this.setState({value:pick.target.value});
+                    this.setState({value:events.target.value});
                     alert("You started a chat with "+this.state.value);
                     event.preventDefault();
                 }//handleSubmit
@@ -73,7 +85,6 @@
                     super(props);
                     this.state = {users: [], messages: [], text: ''};
                     this.connected = this.connected.bind(this);
-                    console.log("Chat Constructor");
                 }//constructor
                 componentDidMount(){
                     socket.on('new_user', this.connected);
