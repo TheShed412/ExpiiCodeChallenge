@@ -16,48 +16,72 @@
         </fieldset>
         <script type="text/babel">
             var socket = io.connect('http://127.0.0.1:5000');
+            var thisForm = false;
 
             class UserList extends React.Component{
+
                 constructor(props){
                     super(props);
-                    this.state = {users: []};
+                    this.state = {users: [], this_user: ''};
                     socket.emit('request_list');
 
-                    this.componentDidMount = this.componentDidMount.bind(this);
+                    //Binding
                     this.addUser = this.addUser.bind(this);
+                    this.makeList = this.makeList.bind(this);
                     this.sendList = this.sendList.bind(this);
                     this.handleChange = this.handleChange.bind(this);
                     this.handleSubmit = this.handleSubmit.bind(this);
+                    this.componentDidMount = this.componentDidMount.bind(this);
                     this.createSelectedItems = this.createSelectedItems.bind(this);
                 }//constructor
 
                 componentDidMount(){
                     socket.on('new_user', this.addUser);
                     socket.on('send_list', this.sendList);
-
-                    socket.on('new_list', (newUserList)=>{
-                        this.setState({users: newUserList});
-                    });
+                    socket.on('new_list', this.makeList);
                 }//componentDidMount
 
+                // Makes list from an older instance
+                makeList(newUserList){
+                    this.setState({users: newUserList});
+                }//makeList
+
+                // Sends a user list to a new instance of chat
                 sendList(){
                     socket.emit('list_sent', this.state.users.slice());
                 }//sendList
 
+                // Adds user to the list
                 addUser(data){
-                    var newList = this.state.users.slice();
-                    newList.push(data);
-                    this.setState({users: newList});
+                    console.log(thisForm);
+                    if(!thisForm){
+                        var newList = this.state.users.slice();
+                        newList.push(data);
+                        this.setState({users: newList});
+                    }else{
+                        this.setState({this_user: data});
+                        thisForm = false;
+                    }//if else
                 }//connected
 
+                //Depricated. Not needed right now. Maybe later.
                 handleChange(pick){
                     this.setState({value:pick.target.value});
                 }//handleChange
+
+                // When a user is selected from the drop down
                 handleSubmit(event) {
-                    alert('You started a conversation with '+event.target.value);
+                    //TODO: This will be when I open the message box
+                    if(this.state.this_user != ''){
+                        alert('You started a conversation with '+event.target.value);
+                    }else {
+                        alert('Enter a name before starting a chat');
+                        event.target.value = 'default';
+                    }//if else
                     event.preventDefault();
                 }//handleSubmit
 
+                // Makes the list of users
                 createSelectedItems(){
                     var items = [];
                     for(var i=0; i<this.state.users.length; i++){
@@ -66,58 +90,40 @@
                     return items;
                 }//createSelectedItems
 
-                render(){
-                    var padding = {float:'right'};
-                    return(
-                        <span>
-                        <select style={padding} onChange={this.handleSubmit}>
-                            <option defaultValue>Select someone to chat with... </option>
-                            {this.createSelectedItems()}
-                        </select>
-                        <label style={padding}>Start a conversation: </label>
-                        </span>
-                )//return
+                    render(){
+                        var padding = {float:'right'};
+                        return(
+                            <span>
+                                <select style={padding} onChange={this.handleSubmit}>
+                                    <option value={'default'} defaultValue>Select someone to chat with... </option>
+                                    {this.createSelectedItems()}
+                                </select>
+                                <label style={padding}>Start a conversation: </label>
+                            </span>
+                    )//return
                 }//render
             }//UserList
 
-            class Chat extends React.Component{
-                constructor(props){
-                    super(props);
-                    this.state = {users: [], messages: [], text: ''};
-                    this.connected = this.connected.bind(this);
-                }//constructor
-                componentDidMount(){
-                    socket.on('new_user', this.connected);
-                }//componentDidMount
-
-                connected(data){
-                    this.state.users.push(data);
-                }//connected
-                render(){
-                    var padding = {float:'right'};
-                    return(
-                    <div style={padding}><UserList
-                        users={this.state.users}
-                    /></div>
-                )//return
-                }//render
-            }//Chat
-
             class UserForm extends React.Component {
+
                 constructor(props){
                     super(props);
                     this.state = {value: ''};
+
+                    //Binding
                     this.handleChange = this.handleChange.bind(this);
                     this.handleSubmit = this.handleSubmit.bind(this);
                 }//constructor
 
+                // Renders the text in the text box
                 handleChange(event){
-                    this.setState({submit: false});
                     this.setState({value: event.target.value});
                 }//handleChange
 
+                // On enter, sends the name to server
                 handleSubmit(event){
                     socket.emit('add_user', this.state.value);
+                    thisForm = true;
                     event.preventDefault();
                 }//handleSubmit
 
@@ -131,14 +137,14 @@
                             </label>
                           </form>
                         );
-
                 }//render
 
             }//UserForm
 
             ReactDOM.render(
                 <div>
-                    <UserForm /><UserList />
+                    <UserForm />
+                    <UserList />
                 </div>,
               document.getElementById('userForm')
             );

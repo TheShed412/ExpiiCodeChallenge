@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from flask_socketio import SocketIO, send, emit
+from flask_socketio import SocketIO, send, emit, join_room, leave_room
 import json
 
 app = Flask(__name__)
@@ -20,7 +20,7 @@ def event_handler(data):
 
 @io.on('add_user')
 def add_user(user):
-    io.emit('new_user', user)
+    emit('new_user', user, broadcast=True)
 
 
 @io.on('request_list')
