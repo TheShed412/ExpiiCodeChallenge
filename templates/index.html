@@ -72,9 +72,9 @@
                 // When a user is selected from the drop down
                 handleSubmit(event) {
                     //TODO: This will be when I open the message box
-                    if(this.state.this_user != ''){
+                    if((this.state.this_user !== '')&&(event.target.value !== 'default')){
                         alert('You started a conversation with '+event.target.value);
-                    }else {
+                    }else if (this.state.this_user === ''){
                         alert('Enter a name before starting a chat');
                         event.target.value = 'default';
                     }//if else
