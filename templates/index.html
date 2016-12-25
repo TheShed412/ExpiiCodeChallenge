@@ -67,14 +67,15 @@
                 }//createSelectedItems
 
                 render(){
+                    var padding = {float:'right'};
                     return(
-                    <div>
-                        <label>Start a conversation: </label>
-                        <select onChange={this.handleSubmit}>
+                        <span>
+                        <select style={padding} onChange={this.handleSubmit}>
                             <option defaultValue>Select someone to chat with... </option>
                             {this.createSelectedItems()}
                         </select>
-                    </div>
+                        <label style={padding}>Start a conversation: </label>
+                        </span>
                 )//return
                 }//render
             }//UserList
@@ -121,9 +122,10 @@
                 }//handleSubmit
 
                 render(){
+                    var inline = {display:'inline'};
                         return(
-                            <form onSubmit={this.handleSubmit}>
-                            <label>
+                            <form onSubmit={this.handleSubmit} style={inline}>
+                            <label style={inline}>
                               Name:
                               <input type="text" value={this.state.value} onChange={this.handleChange} />
                             </label>
