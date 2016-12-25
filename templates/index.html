@@ -54,16 +54,14 @@
                     this.setState({value:pick.target.value});
                 }//handleChange
                 handleSubmit(event) {
-                    this.setState({value:events.target.value});
-                    alert("You started a chat with "+this.state.value);
+                    alert('You started a conversation with '+event.target.value);
                     event.preventDefault();
                 }//handleSubmit
 
                 createSelectedItems(){
                     var items = [];
                     for(var i=0; i<this.state.users.length; i++){
-                        items.push(<option key={i} value={i}>{this.state.users[i]}</option>);
-                        console.log(this.state.users[i]);
+                        items.push(<option key={i} value={this.state.users[i]}>{this.state.users[i]}</option>);
                     }//for
                     return items;
                 }//createSelectedItems
@@ -73,6 +71,7 @@
                     <div>
                         <label>Start a conversation: </label>
                         <select onChange={this.handleSubmit}>
+                            <option defaultValue>Select someone to chat with... </option>
                             {this.createSelectedItems()}
                         </select>
                     </div>
