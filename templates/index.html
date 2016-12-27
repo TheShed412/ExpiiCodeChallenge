@@ -108,7 +108,7 @@
 
                 constructor(props){
                     super(props);
-                    this.state = {value: ''};
+                    this.state = {value: '', user_name: ''};
 
                     //Binding
                     this.handleChange = this.handleChange.bind(this);
@@ -123,6 +123,7 @@
                 // On enter, sends the name to server
                 handleSubmit(event){
                     socket.emit('add_user', this.state.value);
+                    this.setState({user_name: this.state.value});
                     thisForm = true;
                     event.preventDefault();
                 }//handleSubmit
