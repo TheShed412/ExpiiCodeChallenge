@@ -1,0 +1,12 @@
+.message_box{
+    font-size: 12px;
+    height: 280px;
+    width: 60px;
+    border: 1px solid #000;
+    display: block;
+    padding: 5px;
+    box-sizing: border-box;
+}
+.box_name{
+    padding-left: 100px;
+}
