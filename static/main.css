@@ -1,12 +1,21 @@
 .message_box{
-    font-size: 12px;
-    height: 280px;
-    width: 60px;
+    height: 320px;
+    width: 280px;
     border: 1px solid #000;
     display: block;
-    padding: 5px;
     box-sizing: border-box;
 }
 .box_name{
-    padding-left: 100px;
+    height: 40px;
+    width: 278px;
+    padding-top: 10px;
+    border-bottom: 1px solid #000;
+    display: inline-block;;
+}
+body{
+    font-family: sans-serif;
+}
+h2{
+    padding-left: 10px;
+    display: inline;
 }

@@ -6,7 +6,7 @@
         <script src="https://unpkg.com/react-dom@latest/dist/react-dom.js"></script>
         <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="static/main.css">
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='main.css')}}">
         <title>Chat v0.0</title>
     </head>
     <body>
@@ -195,12 +195,12 @@
                 }//connectPartner
 
                 render(){
-                    var inline = {display:'inline'};
+
                     return(
-                        <div className='message_box'>
-                            <h2 style={inline}
-                            className='box_name'
-                            >{this.state.partner}</h2>
+                        <div className="message_box">
+                            <div className="box_name">
+                                <h2>{this.state.partner}</h2>
+                            </div>
                         </div>
                     );
                 }//render
