@@ -41,7 +41,18 @@ def message_handler(msg):
 
 @io.on('start_chat')
 def chat_start(data):
-    emit('chat_started', data, broadcast=True)
+    user1 = data['person1']
+    user2 = data['person2']
+    chat_id2 = data['chatId2']
+    room = user1+user2
+    join_room(room)
+    emit('chat_started', room, room=chat_id2)
+
+
+@io.on('add_to_room')
+def add_to_rom(room):
+    join_room(room)
+    emit('room_connect', room, room=room)
 
 
 if __name__ == '__main__':
