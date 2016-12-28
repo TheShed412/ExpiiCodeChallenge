@@ -165,42 +165,56 @@
                 //partner is the other person in the chat
                 constructor(props){
                     super(props);
-                    this.state = {partner: ''};
+                    this.state = {partners: []};
 
                     this.componentDidMount = this.componentDidMount.bind(this);
                     this.connectPartner = this.connectPartner.bind(this);
-                    this.makeBox = this.makeBox.bind(this);
+                    this.makeBoxes = this.makeBoxes.bind(this);
                     this.setThisPartner = this.setThisPartner.bind(this);
                 }//constructor
 
                 componentDidMount(){
                     socket.on('chat_started', this.connectPartner);
-                    socket.on('room_connect', this.makeBox);
+                    //socket.on('room_connect', this.makeBoxes);
                     socket.on('set_partner', this.setThisPartner);
                 }//componentDidMount
 
                 //This will be called if this user picked the chat partner
                 setThisPartner(newPartner){
-                    this.setState({partner: newPartner});
+                    var newList = this.state.partners.slice();
+                    newList.push(newPartner);
+                    this.setState({partners: newList});
                 }//setThisPartner
 
-                makeBox(room){
+                makeBoxes(){
                     //TODO: I will probably need a chat box array and render them in a loop
+                    var items =[];
+                    for(var i=0; i<this.state.partners.length; i++){
+                        items.push(
+                            <div key={i} className="message_box">
+                                <div key={i} className="box_name">
+                                    <h2>{this.state.partners[i]}</h2>
+                                </div>
+                            </div>
+                        );
+                    }//for
+                    return items;
                 }//makeBox
 
                 //this will be called if another user picked this user as a chat partner
                 connectPartner(data){
-                    this.setState({partner: data.partner});
+                    var newList = this.state.partners.slice();
+                    var newPartner = data.partner;
+                    newList.push(newPartner);
+                    this.setState({partners: newList});
                     socket.emit('add_to_room', data.room);
                 }//connectPartner
 
                 render(){
 
                     return(
-                        <div className="message_box">
-                            <div className="box_name">
-                                <h2>{this.state.partner}</h2>
-                            </div>
+                        <div>
+                            {this.makeBoxes()}
                         </div>
                     );
                 }//render
