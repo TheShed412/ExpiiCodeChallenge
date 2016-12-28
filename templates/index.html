@@ -142,6 +142,27 @@
 
             }//UserForm
 
+            class MessageBox extends React.Component {
+
+                //partner is the other person in the chat
+                constructor(props){
+                    super(props);
+                    this.state = {partner: ''};
+
+                    this.componentDidMount = this.componentDidMount.bind(this);
+                    this.connectPartner = this.connectPartner.bind(this);
+                }//constructor
+
+                componentDidMount(){
+
+                }//componentDidMount
+
+                connectPartner(){
+
+                }//connectPartner
+
+            }//MessageBox
+
             ReactDOM.render(
                 <div>
                     <UserForm />
