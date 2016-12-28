@@ -23,7 +23,7 @@
                 constructor(props){
                     super(props);
                     this.state = {users: [], this_user: ''};
-                    socket.emit('request_list');
+                    socket.emit('request_list'); //Issue might be here
 
                     //Binding
                     this.addUser = this.addUser.bind(this);
@@ -37,7 +37,7 @@
 
                 componentDidMount(){
                     socket.on('new_user', this.addUser);
-                    socket.on('send_list', this.sendList);
+                    socket.on('send_list', this.sendList); //Tracing userList issue
                     socket.on('new_list', this.makeList);
                 }//componentDidMount
 
@@ -48,6 +48,9 @@
 
                 // Sends a user list to a new instance of chat
                 sendList(){
+                    //issue might be that it is requesting from all pages. Each has a different one.
+                    //I need a master list somewhere or have all keep the master list
+                    //and exclude this.state.user from the loop in createSelectedItems
                     socket.emit('list_sent', this.state.users.slice());
                 }//sendList
 
