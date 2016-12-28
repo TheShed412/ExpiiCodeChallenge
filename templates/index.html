@@ -181,8 +181,9 @@
 
                 //This will be called if this user picked the chat partner
                 setThisPartner(newPartner){
-                    var newList = this.state.partners.slice();
-                    newList.push(newPartner);
+                    var oldList = this.state.partners.slice();
+                    var newList = [newPartner];
+                    newList = newList.concat(oldList);
                     this.setState({partners: newList});
                 }//setThisPartner
 
@@ -191,10 +192,13 @@
                     var items =[];
                     for(var i=0; i<this.state.partners.length; i++){
                         items.push(
-                            <div key={i} className="message_box">
+                            <div className='inline' key={i+1}>
+                            <div key={i+2} className="message_box">
                                 <div key={i} className="box_name">
                                     <h2>{this.state.partners[i]}</h2>
                                 </div>
+                            </div>
+                            <div className='buffer' key={i}></div>
                             </div>
                         );
                     }//for
@@ -203,9 +207,9 @@
 
                 //this will be called if another user picked this user as a chat partner
                 connectPartner(data){
-                    var newList = this.state.partners.slice();
-                    var newPartner = data.partner;
-                    newList.push(newPartner);
+                    var oldList = this.state.partners.slice();
+                    var newList = [data.partner];
+                    newList = newList.concat(oldList);
                     this.setState({partners: newList});
                     socket.emit('add_to_room', data.room);
                 }//connectPartner
