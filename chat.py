@@ -23,7 +23,6 @@ def add_user(user):
     emit('new_user', user, broadcast=True)
 
 
-# tracing userList issue
 @io.on('request_list')
 def request_list():
     emit('send_list', broadcast=True, include_self=False)
