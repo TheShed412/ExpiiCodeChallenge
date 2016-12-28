@@ -39,5 +39,10 @@ def message_handler(msg):
     send(msg, broadcast=True)
 
 
+@io.on('start_chat')
+def chat_start(data):
+    emit('chat_started', data, broadcast=True)
+
+
 if __name__ == '__main__':
     io.run(app)

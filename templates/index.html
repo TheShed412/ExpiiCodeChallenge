@@ -53,7 +53,6 @@
 
                 // Adds user to the list
                 addUser(data){
-                    console.log(thisForm);
                     if(!thisForm){
                         var newList = this.state.users.slice();
                         newList.push(data);
@@ -74,6 +73,9 @@
                     //TODO: This will be when I open the message box
                     if((this.state.this_user !== '')&&(event.target.value !== 'default')){
                         alert('You started a conversation with '+event.target.value);
+                        var data = {person: this.state.this_user, chatId: socket.id};
+                        socket.emit('start_chat', data);
+                        console.log(socket.id);
                     }else if (this.state.this_user === ''){
                         alert('Enter a name before starting a chat');
                         event.target.value = 'default';
@@ -151,15 +153,29 @@
 
                     this.componentDidMount = this.componentDidMount.bind(this);
                     this.connectPartner = this.connectPartner.bind(this);
+                    this.makeBox = this.makeBox.bind(this);
                 }//constructor
 
                 componentDidMount(){
-
+                    socket.on('chat_started', this.connectPartner);
                 }//componentDidMount
 
-                connectPartner(){
+                makeBox(){
 
+                }//makeBox
+
+                connectPartner(data){
+                    console.log("In connectPartner");
+                    console.log(data);
                 }//connectPartner
+
+                render(){
+                    return(
+                        <div>
+                        Stuff to know this exists
+                        </div>
+                    );
+                }//render
 
             }//MessageBox
 
@@ -167,6 +183,7 @@
                 <div>
                     <UserForm />
                     <UserList />
+                    <MessageBox />
                 </div>,
               document.getElementById('userForm')
             );
