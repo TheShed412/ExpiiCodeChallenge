@@ -45,8 +45,10 @@ def chat_start(data):
     user2 = data['person2']
     chat_id2 = data['chatId2']
     room = user1+user2
+    send_data = {'partner': user1, 'room': room}
     join_room(room)
-    emit('chat_started', room, room=chat_id2)
+    emit('chat_started', send_data, room=chat_id2)
+    emit('set_partner', user2, broadcast=False, include_self=True)
 
 
 @io.on('add_to_room')

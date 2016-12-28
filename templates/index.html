@@ -11,9 +11,9 @@
     </head>
     <body>
         <h1>Chat Server</h1>
-        <fieldset>
+
             <div id="userForm"></div>
-        </fieldset>
+
         <script type="text/babel">
             var socket = io.connect('http://127.0.0.1:5000');
             var thisForm = false;
@@ -166,30 +166,36 @@
                     this.componentDidMount = this.componentDidMount.bind(this);
                     this.connectPartner = this.connectPartner.bind(this);
                     this.makeBox = this.makeBox.bind(this);
-                    this.roomConnect = this.roomConnect.bind(this);
+                    this.setThisPartner = this.setThisPartner.bind(this);
                 }//constructor
 
                 componentDidMount(){
                     socket.on('chat_started', this.connectPartner);
-                    socket.on('room_connect', this.roomConnect);
+                    socket.on('room_connect', this.makeBox);
+                    socket.on('set_partner', this.setThisPartner);
                 }//componentDidMount
 
-                makeBox(){
+                //This will be called if this user picked the chat partner
+                setThisPartner(newPartner){
+                    this.setState({partner: newPartner});
+                }//setThisPartner
 
+                makeBox(room){
+                    console.log("In room "+room);
+                    console.log('makeBox: '+this.state.partner);
                 }//makeBox
 
-                roomConnect(room){
-                    console.log("In room "+room);
-                }//roomConnect
-
-                connectPartner(room){
-                    socket.emit('add_to_room', room);
+                //this will be called if another user picked this user as a chat partner
+                connectPartner(data){
+                    this.setState({partner: data.partner});
+                    console.log("ConnectedPartner: "+data.partner);
+                    socket.emit('add_to_room', data.room);
                 }//connectPartner
 
                 render(){
                     return(
                         <div>
-                        Stuff to know this exists
+                        Test
                         </div>
                     );
                 }//render
@@ -198,8 +204,11 @@
 
             ReactDOM.render(
                 <div>
-                    <UserForm />
-                    <UserList />
+                    <fieldset>
+                        <UserForm />
+                        <UserList />
+                    </fieldset>
+                    <br />
                     <MessageBox />
                 </div>,
               document.getElementById('userForm')
