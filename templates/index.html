@@ -185,21 +185,19 @@
                 }//setThisPartner
 
                 makeBox(room){
-                    console.log("In room "+room);
-                    console.log('makeBox: '+this.state.partner);
+
                 }//makeBox
 
                 //this will be called if another user picked this user as a chat partner
                 connectPartner(data){
                     this.setState({partner: data.partner});
-                    console.log("ConnectedPartner: "+data.partner);
                     socket.emit('add_to_room', data.room);
                 }//connectPartner
 
                 render(){
                     return(
                         <div>
-                        Test
+                            <h2>{this.state.partner}</h2>
                         </div>
                     );
                 }//render
