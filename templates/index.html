@@ -170,7 +170,6 @@
                     this.componentDidMount = this.componentDidMount.bind(this);
                     this.connectPartner = this.connectPartner.bind(this);
                     this.makeBoxes = this.makeBoxes.bind(this);
-                    this.closeBox = this.closeBox.bind(this);
                     this.setThisPartner = this.setThisPartner.bind(this);
                 }//constructor
 
@@ -188,30 +187,14 @@
                     this.setState({partners: newList});
                 }//setThisPartner
 
-                closeBox(){
-                    alert("Close Box");
-                }//closeBox
-
                 makeBoxes(){
                     //TODO: I will probably need a chat box array and render them in a loop
                     var items =[];
                     for(var i=0; i<this.state.partners.length; i++){
                         items.push(
-                            <div className='inline' key={i+1}>
-                            <div key={i+2} className="message_box">
-                                <div key={i} className="box_name">
-                                    <div key={i+3} className='x'
-                                    onClick={(event) => this.closeBox()}>X</div>
-                                    <h2>{this.state.partners[i]}</h2>
-                                </div>
-                                <div key={i+4} className="messages">
-                                </div>
-                                <div key={i+5} className="send_box">
-                                </div>
-                            </div>
-                            <div className='buffer' key={i}></div>
-                            </div>
+                            <MessageBox key={this.state.partners[i]} partner={this.state.partners[i]} />
                         );
+                        console.log('makeBoxes: '+this.state.partners[i]);
                     }//for
                     return items;
                 }//makeBox
@@ -239,8 +222,34 @@
             class MessageBox extends React.Component {
                 constructor(props){
                     super(props);
-                    this.state = {partner: '', mesages: []};
+                    this.state = {partner: this.props.partner, messages: []};
+                    console.log('MessageBox: '+this.props.partner);
+
+                    this.closeBox = this.closeBox.bind(this);
                 }//constructor
+
+                closeBox(){
+                    alert(this.state.partner);
+                }//closeBox
+
+                render(){
+                    return(
+                        <div className='inline' key={1}>
+                        <div key={2} className="message_box">
+                            <div key={0} className="box_name">
+                                <div key={3} className='x'
+                                onClick={(event) => this.closeBox()}>X</div>
+                                <h2>{this.state.partner}</h2>
+                            </div>
+                            <div key={4} className="messages">
+                            </div>
+                            <div key={5} className="send_box">
+                            </div>
+                        </div>
+                        <div className='buffer' key={0}></div>
+                        </div>
+                    );
+                }//render
             }//MessageBox
 
             ReactDOM.render(
