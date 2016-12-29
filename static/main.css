@@ -2,7 +2,7 @@
     height: 320px;
     width: 280px;
     border: 1px solid #000;
-    display: block;
+    display:inline-block;
     box-sizing: border-box;
 }
 .box_name{
@@ -11,6 +11,31 @@
     padding-top: 10px;
     border-bottom: 1px solid #000;
     display: inline-block;;
+}
+.buffer{
+    display: inline;
+    padding-right: 10px;
+}
+.inline{
+    display: inline;;
+}
+.messages{
+    width: 278px;
+    height: 225px;
+    display: inline-block;
+    border-bottom: 1px solid #000;
+}
+.x{
+    float: right;
+    display: inline;
+    padding-right: 5px;
+    cursor: pointer;
+}
+.x:hover{
+    color: #555;
+}
+.send_box{
+
 }
 body{
     font-family: sans-serif;

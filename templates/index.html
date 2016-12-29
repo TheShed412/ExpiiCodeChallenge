@@ -170,6 +170,7 @@
                     this.componentDidMount = this.componentDidMount.bind(this);
                     this.connectPartner = this.connectPartner.bind(this);
                     this.makeBoxes = this.makeBoxes.bind(this);
+                    this.closeBox = this.closeBox.bind(this);
                     this.setThisPartner = this.setThisPartner.bind(this);
                 }//constructor
 
@@ -187,6 +188,10 @@
                     this.setState({partners: newList});
                 }//setThisPartner
 
+                closeBox(){
+                    alert("Close Box");
+                }//closeBox
+
                 makeBoxes(){
                     //TODO: I will probably need a chat box array and render them in a loop
                     var items =[];
@@ -195,7 +200,13 @@
                             <div className='inline' key={i+1}>
                             <div key={i+2} className="message_box">
                                 <div key={i} className="box_name">
+                                    <div key={i+3} className='x'
+                                    onClick={(event) => this.closeBox()}>X</div>
                                     <h2>{this.state.partners[i]}</h2>
+                                </div>
+                                <div key={i+4} className="messages">
+                                </div>
+                                <div key={i+5} className="send_box">
                                 </div>
                             </div>
                             <div className='buffer' key={i}></div>
@@ -215,10 +226,10 @@
                 }//connectPartner
 
                 render(){
-
+                    var i = 0;
                     return(
                         <div>
-                            {this.makeBoxes()}
+                        {this.makeBoxes()}
                         </div>
                     );
                 }//render
