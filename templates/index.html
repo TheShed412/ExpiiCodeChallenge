@@ -171,12 +171,14 @@
                     this.connectPartner = this.connectPartner.bind(this);
                     this.makeBoxes = this.makeBoxes.bind(this);
                     this.setThisPartner = this.setThisPartner.bind(this);
+                    this.removeBox = this.removeBox.bind(this);
                 }//constructor
 
                 componentDidMount(){
                     socket.on('chat_started', this.connectPartner);
                     //socket.on('room_connect', this.makeBoxes);
                     socket.on('set_partner', this.setThisPartner);
+                    socket.on('remove_partner', this.removeBox);
                 }//componentDidMount
 
                 //This will be called if this user picked the chat partner
@@ -187,6 +189,14 @@
                     this.setState({partners: newList});
                 }//setThisPartner
 
+                removeBox(partner){
+                    var newArray = this.state.partners;
+                    var index = newArray.indexOf(partner);
+
+                    newArray.splice(index, 1);
+                    this.setState({partners:newArray});
+                }//removeBox
+
                 makeBoxes(){
                     //TODO: I will probably need a chat box array and render them in a loop
                     var items =[];
@@ -194,7 +204,6 @@
                         items.push(
                             <MessageBox key={this.state.partners[i]} partner={this.state.partners[i]} />
                         );
-                        console.log('makeBoxes: '+this.state.partners[i]);
                     }//for
                     return items;
                 }//makeBox
@@ -229,7 +238,7 @@
                 }//constructor
 
                 closeBox(){
-                    alert(this.state.partner);
+                    socket.emit('close_box', this.state.partner);
                 }//closeBox
 
                 render(){
