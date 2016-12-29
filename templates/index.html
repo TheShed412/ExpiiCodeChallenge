@@ -231,17 +231,30 @@
             class MessageBox extends React.Component {
                 constructor(props){
                     super(props);
-                    this.state = {partner: this.props.partner, messages: []};
-                    console.log('MessageBox: '+this.props.partner);
+                    this.state = {partner: this.props.partner,
+                                    messages: [],
+                                    value: ''};
 
                     this.closeBox = this.closeBox.bind(this);
+                    this.handleChange = this.handleChange.bind(this);
+                    this.sendMessage = this.sendMessage.bind(this);
                 }//constructor
+
+                sendMessage(event){
+                    console.log("message sent");
+                    event.preventDefault();
+                }//sendMessage
+
+                handleChange(event){
+                    this.setState({value: event.target.value});
+                }//handleChange
 
                 closeBox(){
                     socket.emit('close_box', this.state.partner);
                 }//closeBox
 
                 render(){
+                    var inline = {display:'inline'};
                     return(
                         <div className='inline' key={1}>
                         <div key={2} className="message_box">
@@ -252,8 +265,10 @@
                             </div>
                             <div key={4} className="messages">
                             </div>
-                            <div key={5} className="send_box">
-                            </div>
+                            <form onSubmit={this.sendMessage} style={inline}>
+                                <input type="text" value={this.state.value}
+                                onChange={this.handleChange} />
+                            </form>
                         </div>
                         <div className='buffer' key={0}></div>
                         </div>
