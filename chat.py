@@ -72,7 +72,12 @@ def chat_start(data):
 @io.on('add_to_room')
 def add_to_rom(room):
     join_room(room)
-    emit('room_connect', room, room=room)
+    emit('room_connect', room=room)
+
+
+@io.on('close_box')
+def remove_partner(partner):
+    emit('remove_partner', partner)
 
 
 if __name__ == '__main__':
