@@ -236,6 +236,13 @@
 
             }//MessageBox
 
+            class MessageBox extends React.Component {
+                constructor(props){
+                    super(props);
+                    this.state = {partner: '', mesages: []};
+                }//constructor
+            }//MessageBox
+
             ReactDOM.render(
                 <div>
                     <fieldset>
