@@ -248,14 +248,34 @@
                     this.closeBox = this.closeBox.bind(this);
                     this.handleChange = this.handleChange.bind(this);
                     this.sendMessage = this.sendMessage.bind(this);
+                    this.listMessages = this.listMessages.bind(this);
                 }//constructor
 
                 sendMessage(event){
-                    console.log(this.props.user+': '+this.state.value);
-                    socket.emit('sent_message', this.state.value);
+                    var newList = this.state.messages;
+                    var message = this.props.user+': '+this.state.value;
+
+                    socket.emit('sent_message', message);
+                    newList.push(message);
+
+                    this.setState(newList);
                     this.setState({value: ''});
+
                     event.preventDefault();
                 }//sendMessage
+
+                listMessages(){
+                    var items = [];
+                    for(var i=0; i<this.state.messages.length; i++){
+                        items.push(
+                            <li key={i}>
+                            {this.state.messages[i]}
+                            </li>
+                        );
+                    }//for
+
+                    return items;
+                }//listMessages
 
                 handleChange(event){
                     this.setState({value: event.target.value});
@@ -275,7 +295,10 @@
                                 onClick={(event) => this.closeBox()}>X</div>
                                 <h2>{this.state.partner}</h2>
                             </div>
-                            <div key={4} className="messages">
+                            <div key={4} id="messDiv" className="messages">
+                                <ul key={9}>
+                                    {this.listMessages()}
+                                </ul>
                             </div>
                             <form onSubmit={this.sendMessage} style={inline}>
                                 <input type="text" value={this.state.value}
@@ -291,7 +314,7 @@
 
             ReactDOM.render(
                 <div>
-                        <AppWrapper />
+                    <AppWrapper />
                 </div>,
               document.getElementById('AppWrapper')
             );
