@@ -12,7 +12,7 @@
     <body>
         <h1>Chat Server</h1>
 
-            <div id="userForm"></div>
+            <div id="AppWrapper"></div>
 
         <script type="text/babel">
             var socket = io.connect('http://127.0.0.1:5000');
@@ -121,7 +121,7 @@
                 }//render
             }//UserList
 
-            class UserForm extends React.Component {
+            class AppWrapper extends React.Component {
 
                 constructor(props){
                     super(props);
@@ -141,7 +141,8 @@
                 handleSubmit(event){
                     var data = {user: this.state.value, chatId: socket.id};
                     socket.emit('add_user', data);
-                    this.setState({user_name: this.state.value});
+                    var name = this.state.value;
+                    this.setState({user_name: name});
                     thisForm = true;
                     event.preventDefault();
                 }//handleSubmit
@@ -149,16 +150,23 @@
                 render(){
                     var inline = {display:'inline'};
                         return(
-                            <form onSubmit={this.handleSubmit} style={inline}>
-                            <label style={inline}>
-                              Name:
-                              <input type="text" value={this.state.value} onChange={this.handleChange} />
-                            </label>
-                          </form>
+                            <div>
+                                <fieldset>
+                                <form onSubmit={this.handleSubmit} style={inline}>
+                                <label style={inline}>
+                                  Name:
+                                  <input type="text" value={this.state.value} onChange={this.handleChange} />
+                                </label>
+                              </form>
+                              <UserList />
+                              </fieldset>
+                              <br />
+                              <MessageField user={this.state.user_name} />
+                          </div>
                         );
                 }//render
 
-            }//UserForm
+            }//AppWrapper
 
             class MessageField extends React.Component {
 
@@ -202,7 +210,9 @@
                     var items =[];
                     for(var i=0; i<this.state.partners.length; i++){
                         items.push(
-                            <MessageBox key={this.state.partners[i]} partner={this.state.partners[i]} />
+                            <MessageBox key={this.state.partners[i]}
+                            partner={this.state.partners[i]}
+                            user={this.props.user} />
                         );
                     }//for
                     return items;
@@ -240,14 +250,8 @@
                     this.sendMessage = this.sendMessage.bind(this);
                 }//constructor
 
-                // This will send the message without the name.
-                // I will add the partners name to the thing when I receive it.
-                // Definitely how I planned it from the beginning and not compensating
-                // for the fact that I forgot that I needed the users name at
-                // the beginning of the message. You are crazy if you think
-                // otherwise...
                 sendMessage(event){
-                    console.log("message sent");
+                    console.log(this.props.user+': '+this.state.value);
                     socket.emit('sent_message', this.state.value);
                     this.setState({value: ''});
                     event.preventDefault();
@@ -287,14 +291,9 @@
 
             ReactDOM.render(
                 <div>
-                    <fieldset>
-                        <UserForm />
-                        <UserList />
-                    </fieldset>
-                    <br />
-                    <MessageField />
+                        <AppWrapper />
                 </div>,
-              document.getElementById('userForm')
+              document.getElementById('AppWrapper')
             );
 
         </script>
