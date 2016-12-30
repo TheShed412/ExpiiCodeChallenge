@@ -240,8 +240,16 @@
                     this.sendMessage = this.sendMessage.bind(this);
                 }//constructor
 
+                // This will send the message without the name.
+                // I will add the partners name to the thing when I receive it.
+                // Definitely how I planned it from the beginning and not compensating
+                // for the fact that I forgot that I needed the users name at
+                // the beginning of the message. You are crazy if you think
+                // otherwise...
                 sendMessage(event){
                     console.log("message sent");
+                    socket.emit('sent_message', this.state.value);
+                    this.setState({value: ''});
                     event.preventDefault();
                 }//sendMessage
 
