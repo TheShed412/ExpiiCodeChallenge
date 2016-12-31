@@ -24,6 +24,7 @@
     height: 225px;
     display: inline-block;
     border-bottom: 1px solid #000;
+    overflow-y: scroll;
 }
 .x{
     float: right;
@@ -53,4 +54,13 @@ body{
 h2{
     padding-left: 10px;
     display: inline;
+}
+ul{
+    display: inline;
+    list-style-type: none;
+    font-size: 80%;
+}
+li{
+    padding-left: 10px;
+    padding-bottom: 2px;
 }
