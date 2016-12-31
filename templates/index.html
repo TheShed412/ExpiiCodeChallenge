@@ -212,7 +212,8 @@
                         items.push(
                             <MessageBox key={this.state.partners[i]}
                             partner={this.state.partners[i]}
-                            user={this.props.user} />
+                            user={this.props.user}
+                            room={this.state.room} />
                         );
                     }//for
                     return items;
@@ -223,7 +224,7 @@
                     var oldList = this.state.partners.slice();
                     var newList = [data.partner];
                     newList = newList.concat(oldList);
-                    this.setState({partners: newList});
+                    this.setState({partners: newList, room: data.room});
                     socket.emit('add_to_room', data.room);
                 }//connectPartner
 
@@ -249,20 +250,31 @@
                     this.handleChange = this.handleChange.bind(this);
                     this.sendMessage = this.sendMessage.bind(this);
                     this.listMessages = this.listMessages.bind(this);
+                    this.receiveMessage = this.receiveMessage.bind(this);
                 }//constructor
 
                 sendMessage(event){
                     var newList = this.state.messages;
-                    var message = this.props.user+': '+this.state.value;
+                    var thisMessage = this.props.user+': '+this.state.value;
+                    var thisRoom = this.props.room;
+                    var data = {message: thisMessage, room: thisRoom};
 
-                    socket.emit('sent_message', message);
-                    newList.push(message);
+                    socket.emit('sent_message', data);
+                    newList.push(thisMessage);
 
                     this.setState(newList);
                     this.setState({value: ''});
 
                     event.preventDefault();
                 }//sendMessage
+
+                componentDidMount(){
+                    socket.on('receive_message', this.receiveMessage);
+                }//componentDidMount
+
+                receiveMessage(message){
+                    console.log(message);
+                }//receiveMessage
 
                 listMessages(){
                     var items = [];

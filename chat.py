@@ -80,5 +80,12 @@ def remove_partner(partner):
     emit('remove_partner', partner)
 
 
+@io.on('sent_message')
+def sent_message(data):
+    message = data['message']
+    room = data['room']
+    emit('receive_message', message, include_self=False, room=room)
+
+
 if __name__ == '__main__':
     io.run(app)
