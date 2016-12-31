@@ -73,6 +73,7 @@ def chat_start(data):
 @io.on('add_to_room')
 def add_to_rom(room):
     join_room(room)
+    print (room)
     emit('room_connect', room=room)
 
 

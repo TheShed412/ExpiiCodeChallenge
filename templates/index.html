@@ -193,7 +193,6 @@
                 setThisPartner(data){
                     var oldList = this.state.partners.slice();
                     var newList = [data.partner];
-                    console.log(data.room);
                     newList = newList.concat(oldList);
                     this.setState({partners: newList, room: data.room});
                 }//setThisPartner
@@ -214,7 +213,8 @@
                             <MessageBox key={this.state.partners[i]}
                             partner={this.state.partners[i]}
                             user={this.props.user}
-                            room={this.state.room} />
+                            room={this.state.room}
+                            socket={io.connect('http://127.0.0.1:5000/'+this.state.room)} />
                         );
                     }//for
                     return items;
@@ -226,7 +226,7 @@
                     var newList = [data.partner];
                     newList = newList.concat(oldList);
                     this.setState({partners: newList, room: data.room});
-                    socket.emit('add_to_room', data.room);
+                    //socket.emit('add_to_room', data.room);
                 }//connectPartner
 
                 render(){
@@ -246,7 +246,15 @@
                     this.state = {partner: this.props.partner,
                                     messages: [],
                                     value: '',
-                                    room: this.props.room};
+                                    room: this.props.room,
+                                    socket: this.props.socket};
+
+                    this.state.socket.emit('add_to_room', this.state.room);
+
+                    console.log("From Room: "+this.state.room);
+                    console.log("This room: "+this.state.room);
+                    console.log("This Socket");
+                    console.log(this.state.socket);
 
                     this.closeBox = this.closeBox.bind(this);
                     this.handleChange = this.handleChange.bind(this);
@@ -259,9 +267,10 @@
                     var newList = this.state.messages;
                     var thisMessage = this.props.user+': '+this.state.value;
                     var thisRoom = this.state.room;
-                    var data = {message: thisMessage, room: thisRoom};
+                    var data = {message: thisMessage,
+                                room: thisRoom};
 
-                    socket.emit('sent_message', data);
+                    this.state.socket.emit('sent_message', data);
                     newList.push(thisMessage);
 
                     this.setState({messages: newList});
@@ -271,13 +280,11 @@
                 }//sendMessage
 
                 componentDidMount(){
-                    socket.on('receive_message', this.receiveMessage);
+                    this.state.socket.on('receive_message', this.receiveMessage);
                 }//componentDidMount
 
                 receiveMessage(data){
                     var newList = this.state.messages;
-                    console.log("From Room: "+data.room);
-                    console.log("This room: "+this.state.room);
                     newList.push(data.message);
                     this.setState({messages: newList});
                 }//receiveMessage
@@ -300,7 +307,7 @@
                 }//handleChange
 
                 closeBox(){
-                    socket.emit('close_box', this.state.partner);
+                    this.state.socket.emit('close_box', this.state.partner);
                 }//closeBox
 
                 render(){
