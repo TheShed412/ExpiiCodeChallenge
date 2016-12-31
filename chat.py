@@ -64,9 +64,10 @@ def chat_start(data):
     chat_id2 = data['chatId2']
     room = user1+user2
     send_data = {'partner': user1, 'room': room}
+    send_data2 = {'partner': user2, 'room': room}
     join_room(room)
     emit('chat_started', send_data, room=chat_id2)
-    emit('set_partner', user2, broadcast=False, include_self=True)
+    emit('set_partner', send_data2, broadcast=False, include_self=True)
 
 
 @io.on('add_to_room')
@@ -82,9 +83,8 @@ def remove_partner(partner):
 
 @io.on('sent_message')
 def sent_message(data):
-    message = data['message']
     room = data['room']
-    emit('receive_message', message, include_self=False, room=room)
+    io.emit('receive_message', data, include_self=False, room=room)
 
 
 if __name__ == '__main__':

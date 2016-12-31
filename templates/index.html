@@ -173,7 +173,7 @@
                 //partner is the other person in the chat
                 constructor(props){
                     super(props);
-                    this.state = {partners: []};
+                    this.state = {partners: [], room: ''};
 
                     this.componentDidMount = this.componentDidMount.bind(this);
                     this.connectPartner = this.connectPartner.bind(this);
@@ -190,11 +190,12 @@
                 }//componentDidMount
 
                 //This will be called if this user picked the chat partner
-                setThisPartner(newPartner){
+                setThisPartner(data){
                     var oldList = this.state.partners.slice();
-                    var newList = [newPartner];
+                    var newList = [data.partner];
+                    console.log(data.room);
                     newList = newList.concat(oldList);
-                    this.setState({partners: newList});
+                    this.setState({partners: newList, room: data.room});
                 }//setThisPartner
 
                 removeBox(partner){
@@ -244,7 +245,8 @@
                     super(props);
                     this.state = {partner: this.props.partner,
                                     messages: [],
-                                    value: ''};
+                                    value: '',
+                                    room: this.props.room};
 
                     this.closeBox = this.closeBox.bind(this);
                     this.handleChange = this.handleChange.bind(this);
@@ -256,13 +258,13 @@
                 sendMessage(event){
                     var newList = this.state.messages;
                     var thisMessage = this.props.user+': '+this.state.value;
-                    var thisRoom = this.props.room;
+                    var thisRoom = this.state.room;
                     var data = {message: thisMessage, room: thisRoom};
 
                     socket.emit('sent_message', data);
                     newList.push(thisMessage);
 
-                    this.setState(newList);
+                    this.setState({messages: newList});
                     this.setState({value: ''});
 
                     event.preventDefault();
@@ -272,8 +274,12 @@
                     socket.on('receive_message', this.receiveMessage);
                 }//componentDidMount
 
-                receiveMessage(message){
-                    console.log(message);
+                receiveMessage(data){
+                    var newList = this.state.messages;
+                    console.log("From Room: "+data.room);
+                    console.log("This room: "+this.state.room);
+                    newList.push(data.message);
+                    this.setState({messages: newList});
                 }//receiveMessage
 
                 listMessages(){
