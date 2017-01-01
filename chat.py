@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for
-from flask_socketio import SocketIO, send, emit, join_room, leave_room
+from flask_socketio import SocketIO, send, emit, join_room, leave_room, Namespace
 import json
 import os
 
@@ -65,7 +65,6 @@ def chat_start(data):
     room = user1+user2
     send_data = {'partner': user1, 'room': room}
     send_data2 = {'partner': user2, 'room': room}
-    join_room(room)
     emit('chat_started', send_data, room=chat_id2)
     emit('set_partner', send_data2, broadcast=False, include_self=True)
 
@@ -86,7 +85,6 @@ def remove_partner(partner):
 def sent_message(data):
     room = data['room']
     emit('receive_message', data, include_self=False, room=room)
-
 
 if __name__ == '__main__':
     io.run(app)

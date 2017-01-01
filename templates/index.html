@@ -214,7 +214,7 @@
                             partner={this.state.partners[i]}
                             user={this.props.user}
                             room={this.state.room}
-                            socket={io.connect('http://127.0.0.1:5000/'+this.state.room)} />
+                            socket={io.connect()} />
                         );
                     }//for
                     return items;
@@ -246,15 +246,9 @@
                     this.state = {partner: this.props.partner,
                                     messages: [],
                                     value: '',
-                                    room: this.props.room,
-                                    socket: this.props.socket};
+                                    room: this.props.room};
 
-                    this.state.socket.emit('add_to_room', this.state.room);
-
-                    console.log("From Room: "+this.state.room);
-                    console.log("This room: "+this.state.room);
-                    console.log("This Socket");
-                    console.log(this.state.socket);
+                    socket.emit('add_to_room', this.state.room);
 
                     this.closeBox = this.closeBox.bind(this);
                     this.handleChange = this.handleChange.bind(this);
@@ -270,7 +264,7 @@
                     var data = {message: thisMessage,
                                 room: thisRoom};
 
-                    this.state.socket.emit('sent_message', data);
+                    socket.emit('sent_message', data);
                     newList.push(thisMessage);
 
                     this.setState({messages: newList});
@@ -280,13 +274,15 @@
                 }//sendMessage
 
                 componentDidMount(){
-                    this.state.socket.on('receive_message', this.receiveMessage);
+                    socket.on('receive_message', this.receiveMessage);
                 }//componentDidMount
 
                 receiveMessage(data){
-                    var newList = this.state.messages;
-                    newList.push(data.message);
-                    this.setState({messages: newList});
+                    if(data.room === this.state.room){
+                        var newList = this.state.messages;
+                        newList.push(data.message);
+                        this.setState({messages: newList});
+                    }//if
                 }//receiveMessage
 
                 listMessages(){
@@ -307,7 +303,7 @@
                 }//handleChange
 
                 closeBox(){
-                    this.state.socket.emit('close_box', this.state.partner);
+                    socket.emit('close_box', this.state.partner);
                 }//closeBox
 
                 render(){
