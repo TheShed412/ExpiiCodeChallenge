@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request
 from flask_socketio import SocketIO, send, emit, join_room, leave_room, Namespace
 import json
 import os
@@ -28,6 +28,12 @@ def dated_url_for(endpoint, **values):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+@io.on('disconnect', namespace='/')
+def user_disconnect():
+    thing = request.sid
+    print(thing)
 
 
 @io.on('my_event')

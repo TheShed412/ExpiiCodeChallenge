@@ -73,7 +73,6 @@
 
                 // When a user is selected from the drop down
                 handleSubmit(event) {
-                    //TODO: This will be when I open the message box
                     if((this.state.this_user !== '')&&(event.target.value !== 'default')){
 
                         var index = event.nativeEvent.target.selectedIndex;
@@ -130,7 +129,15 @@
                     //Binding
                     this.handleChange = this.handleChange.bind(this);
                     this.handleSubmit = this.handleSubmit.bind(this);
+                    this.sendDisconnect = this.sendDisconnect.bind(this);
                 }//constructor
+
+                componentDidMount(){
+                }//componentDidMount
+
+                sendDisconnect(){
+                    socket.emit('user_disconnect', this.state.user_name);
+                }//sed
 
                 // Renders the text in the text box
                 handleChange(event){
