@@ -92,6 +92,11 @@
                     event.preventDefault();
                 }//handleSubmit
 
+                /*So the users in the list are objects that contain the
+                sids inside of them so I can just compare those to the id
+                I will recieve from the server to remove that person from the
+                list*/
+
                 // Makes the list of users
                 createSelectedItems(){
                     var items = [];
@@ -129,15 +134,7 @@
                     //Binding
                     this.handleChange = this.handleChange.bind(this);
                     this.handleSubmit = this.handleSubmit.bind(this);
-                    this.sendDisconnect = this.sendDisconnect.bind(this);
                 }//constructor
-
-                componentDidMount(){
-                }//componentDidMount
-
-                sendDisconnect(){
-                    socket.emit('user_disconnect', this.state.user_name);
-                }//sed
 
                 // Renders the text in the text box
                 handleChange(event){
