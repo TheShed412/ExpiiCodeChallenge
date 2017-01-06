@@ -32,8 +32,7 @@ def index():
 
 @io.on('disconnect', namespace='/')
 def user_disconnect():
-    thing = request.sid
-    print(thing)
+    emit('user_left', request.sid, broadcast=True)
 
 
 @io.on('my_event')

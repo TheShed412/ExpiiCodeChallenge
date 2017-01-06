@@ -33,13 +33,23 @@
                     this.handleSubmit = this.handleSubmit.bind(this);
                     this.componentDidMount = this.componentDidMount.bind(this);
                     this.createSelectedItems = this.createSelectedItems.bind(this);
+                    this.userLeft = this.userLeft.bind(this);
                 }//constructor
 
                 componentDidMount(){
                     socket.on('new_user', this.addUser);
                     socket.on('send_list', this.sendList);
                     socket.on('new_list', this.makeList);
+                    socket.on('user_left', this.userLeft);
                 }//componentDidMount
+
+                userLeft(socketId){
+                    for (var i = 0; i < this.state.users.length; i++) {
+                        if(this.state.users[i].chatId === socketId){
+                            console.log(this.state.users[i].user);
+                        }//if
+                    }//for loop
+                }//userLeft
 
                 // Makes list from an older instance
                 makeList(newUserList){
@@ -82,7 +92,7 @@
                         var data = {person1: this.state.this_user.user, chatId1: socket.id,
                                     person2: name, chatId2: event.target.value};
                         socket.emit('start_chat', data);
-
+                        event.target.value = 'default';
                     }else if (this.state.this_user === ''){
 
                         alert('Enter a name before starting a chat');
