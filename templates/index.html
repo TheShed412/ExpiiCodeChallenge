@@ -46,7 +46,9 @@
                 userLeft(socketId){
                     for (var i = 0; i < this.state.users.length; i++) {
                         if(this.state.users[i].chatId === socketId){
-                            console.log(this.state.users[i].user);
+                            var newArray = this.state.users;
+                            newArray.splice(i, 1);
+                            this.setState({users: newArray});
                         }//if
                     }//for loop
                 }//userLeft
