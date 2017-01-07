@@ -248,15 +248,19 @@
                 }//removeBox
 
                 makeBoxes(){
-                    var items =[];
+                    var items = [];
+                    var check = [];
                     for(var i=0; i<this.state.partners.length; i++){
-                        items.push(
-                            <MessageBox key={this.state.partners[i]}
-                            partner={this.state.partners[i]}
-                            user={this.props.user}
-                            room={this.state.room}
-                            socket={io.connect()} />
-                        );
+                        if(!check.includes(this.state.partners[i])){
+                            items.push(
+                                <MessageBox key={this.state.partners[i]}
+                                partner={this.state.partners[i]}
+                                user={this.props.user}
+                                room={this.state.room}
+                                socket={io.connect()} />
+                            );
+                            check.push(this.state.partners[i]);
+                        }//if
                     }//for
                     return items;
                 }//makeBox
