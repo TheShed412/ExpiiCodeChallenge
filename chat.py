@@ -45,9 +45,14 @@ def request_list():
     emit('send_list', broadcast=True, include_self=False)
 
 
+@io.on('old_partner')
+def old_partner(data):
+    emit('set_partner', data, include_self=False)
+
+
 @io.on('list_sent')
 def send_list(users):
-    if request.sid == users[0]['chatId']:
+    if len(users) > 0 and request.sid == users[0]['chatId']:
         emit('new_list', users, include_self=False, broadcast=True)
 
 

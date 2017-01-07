@@ -184,13 +184,16 @@
                 //partner is the other person in the chat
                 constructor(props){
                     super(props);
-                    this.state = {partners: [], room: ''};
+                    this.state = {partners: [],
+                                    room: '',
+                                    oldSessions: []};
 
                     this.componentDidMount = this.componentDidMount.bind(this);
                     this.connectPartner = this.connectPartner.bind(this);
                     this.makeBoxes = this.makeBoxes.bind(this);
                     this.setThisPartner = this.setThisPartner.bind(this);
                     this.removeBox = this.removeBox.bind(this);
+                    this.fromOldPartner = this.fromOldPartner.bind(this);
                 }//constructor
 
                 componentDidMount(){
@@ -198,26 +201,53 @@
                     //socket.on('room_connect', this.makeBoxes);
                     socket.on('set_partner', this.setThisPartner);
                     socket.on('remove_partner', this.removeBox);
+                    socket.on('from_old_partner', this.fromOldPartner);
                 }//componentDidMount
 
+                fromOldPartner(data){
+                    if(data.room.contains(this.props.user_name)&&this.state.partners.length == 0){
+                        var oldList = this.state.partners.slice();
+                        var newList = [data.partner];
+                        newList = newList.concat(oldList);
+                        this.setState({partners: newList, room: data.room});
+                    }//if
+                }//fromOldPartner
+
                 //This will be called if this user picked the chat partner
+                //I will check to see if there was an old session here
                 setThisPartner(data){
                     var oldList = this.state.partners.slice();
                     var newList = [data.partner];
+                    var inOldSesh = false;
+                    var i = 0;
                     newList = newList.concat(oldList);
-                    this.setState({partners: newList, room: data.room});
+
+                    for (; !inOldSesh && (i < this.state.oldSessions.length); i++) {
+                        if (data.partner === this.state.oldSessions[i].partner){
+                            inOldSesh = true;
+                        }//if
+                    }//for
+
+                    if (!inOldSesh){
+                        this.setState({partners: newList, room: data.room});
+                    } else {
+                        var oldRoom = this.state.oldSessions[i-1].room;
+                        this.setState({partners: newList,
+                                        room: oldRoom});
+                    }//if else
                 }//setThisPartner
 
                 removeBox(data){
                     var newArray = this.state.partners;
                     var index = newArray.indexOf(data.partner);
+                    var newSeshArray = this.state.oldSessions;
 
+                    newSeshArray.push(data);
                     newArray.splice(index, 1);
-                    this.setState({partners:newArray});
+                    this.setState({partners:newArray, oldSessions: newSeshArray});
                 }//removeBox
 
                 makeBoxes(){
-                    //TODO: I will probably need a chat box array and render them in a loop
                     var items =[];
                     for(var i=0; i<this.state.partners.length; i++){
                         items.push(
@@ -235,9 +265,26 @@
                 connectPartner(data){
                     var oldList = this.state.partners.slice();
                     var newList = [data.partner];
+                    var inOldSesh = false;
+                    var i = 0;
                     newList = newList.concat(oldList);
-                    this.setState({partners: newList, room: data.room});
-                    //socket.emit('add_to_room', data.room);
+
+                    for (; !inOldSesh && (i < this.state.oldSessions.length); i++) {
+                        if (data.partner === this.state.oldSessions[i].partner){
+                            inOldSesh = true;
+                        }//if
+                    }//for
+
+                    if (!inOldSesh){
+                        this.setState({partners: newList, room: data.room});
+                    } else {
+                        var oldRoom = this.state.oldSessions[i-1].room;
+                        var newData = {messages: this.state.oldSessions[i-1].messages,
+                                        room: this.state.oldSessions[i-1].room};
+                        socket.emit('old_partner', newData);
+                        this.setState({partners: newList,
+                                        room: oldRoom});
+                    }//if else
                 }//connectPartner
 
                 render(){
