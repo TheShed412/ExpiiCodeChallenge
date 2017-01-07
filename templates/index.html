@@ -208,9 +208,9 @@
                     this.setState({partners: newList, room: data.room});
                 }//setThisPartner
 
-                removeBox(partner){
+                removeBox(data){
                     var newArray = this.state.partners;
-                    var index = newArray.indexOf(partner);
+                    var index = newArray.indexOf(data.partner);
 
                     newArray.splice(index, 1);
                     this.setState({partners:newArray});
@@ -314,7 +314,10 @@
                 }//handleChange
 
                 closeBox(){
-                    socket.emit('close_box', this.state.partner);
+                    var data = {partner: this.state.partner,
+                                room: this.state.room,
+                                messages: this.state.messages};
+                    socket.emit('close_box', data);
                 }//closeBox
 
                 render(){

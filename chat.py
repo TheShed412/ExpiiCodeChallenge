@@ -32,32 +32,27 @@ def index():
 
 @io.on('disconnect', namespace='/')
 def user_disconnect():
-    print ("user_disconnect")
     emit('user_left', request.sid, broadcast=True)
 
 
 @io.on('add_user')
 def add_user(user):
-    print ("add_user")
     emit('new_user', user, broadcast=True)
 
 
 @io.on('request_list')
 def request_list():
-    print ("request_list")
     emit('send_list', broadcast=True, include_self=False)
 
 
 @io.on('list_sent')
 def send_list(users):
-    print ("send_list")
     if request.sid == users[0]['chatId']:
         emit('new_list', users, include_self=False, broadcast=True)
 
 
 @io.on('start_chat')
 def chat_start(data):
-    print ("chat_start")
     user1 = data['person1']
     user2 = data['person2']
     chat_id2 = data['chatId2']
@@ -71,19 +66,16 @@ def chat_start(data):
 @io.on('add_to_room')
 def add_to_rom(room):
     join_room(room)
-    print ("add_to_room")
     emit('room_connect', room=room)
 
 
 @io.on('close_box')
-def remove_partner(partner):
-    print ("remove_partner")
-    emit('remove_partner', partner)
+def remove_partner(data):
+    emit('remove_partner', data)
 
 
 @io.on('sent_message')
 def sent_message(data):
-    print ("sent_message")
     room = data['room']
     emit('receive_message', data, include_self=False, room=room)
 
