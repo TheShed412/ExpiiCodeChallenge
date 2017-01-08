@@ -185,7 +185,9 @@
                     super(props);
                     this.state = {partners: [],
                                     room: '',
-                                    oldSessions: []};
+                                    messages: [],
+                                    oldSessions: [],
+                                    reconnectSeshs: []};
 
                     this.componentDidMount = this.componentDidMount.bind(this);
                     this.connectPartner = this.connectPartner.bind(this);
@@ -219,7 +221,6 @@
                     }//for
 
                     //see if the partner was in an old session or current
-                    console.log(this.state.partners.includes(data.user));
                     if(inOldSesh || this.state.partners.includes(data.user)){
                         socket.emit('reconnect_partner', data);
                     }//if
@@ -270,7 +271,9 @@
                 }//getOldMessages
 
                 reconnectChat(data){
-                    this.setState({messages: data.messages, room: data.room});
+                    var array = this.state.reconnectSeshs;
+                    array.push(data);
+                    this.setState({reconnectSeshs: array});
                 }//reconnectChat
 
                 removeBox(data){
@@ -288,9 +291,17 @@
                     var check = [];
                     var messages = [];
 
+                    for(var i=0; i<this.state.reconnectSeshs.length; i++){
+                        if(this.state.room === this.state.reconnectSeshs[i].room){
+                            messages = this.state.reconnectSeshs[i].messages;
+                        }//if
+                    }//for
+
                     for(var i=0; i<this.state.partners.length; i++){
                         if(!check.includes(this.state.partners[i])){
-                            messages = this.getOldMessages(this.state.partners[i]);
+                            if(messages.length<1){
+                                messages = this.getOldMessages(this.state.partners[i]);
+                            }//if
                             //check if messages is empty
                             //if it is, check for reconnect
                             if(messages.length<1){
