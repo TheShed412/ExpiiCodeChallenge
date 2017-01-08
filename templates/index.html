@@ -195,6 +195,7 @@
                     this.fromOldPartner = this.fromOldPartner.bind(this);
                     this.getOldMessages = this.getOldMessages.bind(this);
                     this.disconnectedPartner = this.disconnectedPartner.bind(this);
+                    this.reconnectChat = this.reconnectChat.bind(this);
                 }//constructor
 
                 componentDidMount(){
@@ -204,6 +205,7 @@
                     socket.on('set_partner', this.setThisPartner);
                     socket.on('remove_partner', this.removeBox);
                     socket.on('from_old_partner', this.fromOldPartner);
+                    socket.on('reconnect_chat', this.reconnectChat);
                 }//componentDidMount
 
                 disconnectedPartner(data){
@@ -266,6 +268,10 @@
                     }//for
                     return messages;
                 }//getOldMessages
+
+                reconnectChat(data){
+                    this.setState({messages: data.messages, room: data.room});
+                }//reconnectChat
 
                 removeBox(data){
                     var newArray = this.state.partners;
@@ -357,8 +363,8 @@
                     this.sendMessage = this.sendMessage.bind(this);
                     this.listMessages = this.listMessages.bind(this);
                     this.receiveMessage = this.receiveMessage.bind(this);
-                    this.reconnectChat = this.reconnectChat.bind(this);
                     this.givePartnerData = this.givePartnerData.bind(this);
+                    this.sendMessageList = this.sendMessageList.bind(this);
                 }//constructor
 
                 sendMessage(event){
@@ -380,7 +386,6 @@
                 componentDidMount(){
                     socket.on('receive_message', this.receiveMessage);
                     socket.on('send_message_list', this.sendMessageList);
-                    socket.on('reconnect_chat', this.reconnectChat);
                     socket.on('get_partner_data', this.givePartnerData);
                 }//componentDidMount
 
@@ -392,10 +397,6 @@
                         socket.emit('give_partner_data', newData);
                     }//if
                 }//givePartnerData
-
-                reconnectChat(data){
-                    this.setState({messages: data.messages, room: data.room});
-                }//reconnectChat
 
                 sendMessageList(){
                     var data = {room: this.state.room, messages: this.state.messages};
