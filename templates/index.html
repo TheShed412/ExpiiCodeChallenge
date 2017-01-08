@@ -194,6 +194,7 @@
                     this.setThisPartner = this.setThisPartner.bind(this);
                     this.removeBox = this.removeBox.bind(this);
                     this.fromOldPartner = this.fromOldPartner.bind(this);
+                    this.getOldMessages = this.getOldMessages.bind(this);
                 }//constructor
 
                 componentDidMount(){
@@ -237,6 +238,17 @@
                     }//if else
                 }//setThisPartner
 
+                getOldMessages(partner){
+                    var messages = [];
+
+                    for(var i=0; i<this.state.oldSessions.length; i++){
+                        if(partner === this.state.oldSessions[i].partner){
+                            messages = this.state.oldSessions[i].messages;
+                        }//if
+                    }//for
+                    return messages;
+                }//getOldMessages
+
                 removeBox(data){
                     var newArray = this.state.partners;
                     var index = newArray.indexOf(data.partner);
@@ -250,12 +262,17 @@
                 makeBoxes(){
                     var items = [];
                     var check = [];
+                    var messages = [];
+
                     for(var i=0; i<this.state.partners.length; i++){
                         if(!check.includes(this.state.partners[i])){
+                            messages = this.getOldMessages(this.state.partners[i]);
+                            console.log(messages);
                             items.push(
                                 <MessageBox key={this.state.partners[i]}
                                 partner={this.state.partners[i]}
                                 user={this.props.user}
+                                messages={messages}
                                 room={this.state.room}
                                 socket={io.connect()} />
                             );
@@ -306,7 +323,7 @@
                 constructor(props){
                     super(props);
                     this.state = {partner: this.props.partner,
-                                    messages: [],
+                                    messages: this.props.messages,
                                     value: '',
                                     room: this.props.room};
 
@@ -367,7 +384,7 @@
                 closeBox(){
                     var data = {partner: this.state.partner,
                                 room: this.state.room,
-                                messages: this.state.messages};
+                                messages: this.state.messages};//this is an oldSession obj
                     socket.emit('close_box', data);
                 }//closeBox
 
