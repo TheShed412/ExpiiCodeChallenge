@@ -70,10 +70,9 @@
                         newList.push(data);
                         this.setState({users: newList});
                     }else{
-                        this.setState({this_user: data});
                         var newList = this.state.users.slice();
                         newList.push(data);
-                        this.setState({users: newList});
+                        this.setState({users: newList, this_user: data});
                         thisForm = false;
                     }//if else
                 }//connected
@@ -195,15 +194,34 @@
                     this.removeBox = this.removeBox.bind(this);
                     this.fromOldPartner = this.fromOldPartner.bind(this);
                     this.getOldMessages = this.getOldMessages.bind(this);
+                    this.disconnectedPartner = this.disconnectedPartner.bind(this);
                 }//constructor
 
                 componentDidMount(){
                     socket.on('chat_started', this.connectPartner);
+                    socket.on('new_user', this.disconnectedPartner);
                     //socket.on('room_connect', this.makeBoxes);
                     socket.on('set_partner', this.setThisPartner);
                     socket.on('remove_partner', this.removeBox);
                     socket.on('from_old_partner', this.fromOldPartner);
                 }//componentDidMount
+
+                disconnectedPartner(data){
+                    var inOldSesh = false;
+
+                    //look for the partner in oldSessions
+                    for(var i=0;!inOldSesh&&(i<this.state.oldSessions.length); i++){
+                        if(this.state.oldSessions[i].partner === data.user){
+                            inOldSesh = true;
+                        }//if
+                    }//for
+
+                    //see if the partner was in an old session or current
+                    console.log(this.state.partners.includes(data.user));
+                    if(inOldSesh || this.state.partners.includes(data.user)){
+                        socket.emit('reconnect_partner', data);
+                    }//if
+                }//disconnectedPartner
 
                 fromOldPartner(data){
                     if(data.room.contains(this.props.user_name)&&this.state.partners.length == 0){
@@ -267,7 +285,12 @@
                     for(var i=0; i<this.state.partners.length; i++){
                         if(!check.includes(this.state.partners[i])){
                             messages = this.getOldMessages(this.state.partners[i]);
-                            console.log(messages);
+                            //check if messages is empty
+                            //if it is, check for reconnect
+                            if(messages.length<1){
+                                var data = {user: this.props.user, room: this.state.room};
+                                socket.emit('request_mess', data);
+                            }//if
                             items.push(
                                 <MessageBox key={this.state.partners[i]}
                                 partner={this.state.partners[i]}
@@ -334,6 +357,8 @@
                     this.sendMessage = this.sendMessage.bind(this);
                     this.listMessages = this.listMessages.bind(this);
                     this.receiveMessage = this.receiveMessage.bind(this);
+                    this.reconnectChat = this.reconnectChat.bind(this);
+                    this.givePartnerData = this.givePartnerData.bind(this);
                 }//constructor
 
                 sendMessage(event){
@@ -354,7 +379,28 @@
 
                 componentDidMount(){
                     socket.on('receive_message', this.receiveMessage);
+                    socket.on('send_message_list', this.sendMessageList);
+                    socket.on('reconnect_chat', this.reconnectChat);
+                    socket.on('get_partner_data', this.givePartnerData);
                 }//componentDidMount
+
+                givePartnerData(data){
+                    if(this.state.partner === data.user){
+                        var newData = {chatId: data.chatId,
+                                        room: this.state.room,
+                                        messages: this.state.messages};
+                        socket.emit('give_partner_data', newData);
+                    }//if
+                }//givePartnerData
+
+                reconnectChat(data){
+                    this.setState({messages: data.messages, room: data.room});
+                }//reconnectChat
+
+                sendMessageList(){
+                    var data = {room: this.state.room, messages: this.state.messages};
+                    socket.emit('new_message_list', data);
+                }//sendMessageList
 
                 receiveMessage(data){
                     if(data.room === this.state.room){

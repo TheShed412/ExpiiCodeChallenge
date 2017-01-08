@@ -74,9 +74,26 @@ def add_to_rom(room):
     emit('room_connect', room=room)
 
 
+@io.on('reconnect_partner')
+def reconnect_partner(data):
+    emit('get_partner_data', data, include_self=True, broadcast=False)
+
+
 @io.on('close_box')
 def remove_partner(data):
     emit('remove_partner', data)
+
+
+@io.on('request_mess')
+def request_mess(data):
+    room = data['room']
+    emit('send_message_list', room=room, include_self=False)
+
+
+@io.on('give_partner_data')
+def new_message_list(data):
+    room = data['chatId']
+    emit('reconnect_chat', data, room=room, include_self=False)
 
 
 @io.on('sent_message')
