@@ -1,6 +1,5 @@
 from flask import Flask, render_template, url_for, request
-from flask_socketio import SocketIO, send, emit, join_room, leave_room, Namespace
-import json
+from flask_socketio import SocketIO, emit, join_room
 import os
 
 app = Flask(__name__)
@@ -8,6 +7,7 @@ app.config['SECRET_KEY'] = 'webble_wobble'
 io = SocketIO(app)
 
 # This snippet stops it from caching my css
+# Something happened. It doesn't work anymore.
 
 
 @app.context_processor
