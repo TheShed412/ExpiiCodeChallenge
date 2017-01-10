@@ -29,7 +29,6 @@
                     this.addUser = this.addUser.bind(this);
                     this.makeList = this.makeList.bind(this);
                     this.sendList = this.sendList.bind(this);
-                    this.handleChange = this.handleChange.bind(this);
                     this.handleSubmit = this.handleSubmit.bind(this);
                     this.componentDidMount = this.componentDidMount.bind(this);
                     this.createSelectedItems = this.createSelectedItems.bind(this);
@@ -77,10 +76,6 @@
                     }//if else
                 }//connected
 
-                //Depricated. Not needed right now. Maybe later.
-                handleChange(pick){
-                    this.setState({value:pick.target.value});
-                }//handleChange
 
                 // When a user is selected from the drop down
                 handleSubmit(event) {
@@ -203,7 +198,6 @@
                 componentDidMount(){
                     socket.on('chat_started', this.connectPartner);
                     socket.on('new_user', this.disconnectedPartner);
-                    //socket.on('room_connect', this.makeBoxes);
                     socket.on('set_partner', this.setThisPartner);
                     socket.on('remove_partner', this.removeBox);
                     socket.on('from_old_partner', this.fromOldPartner);
@@ -244,6 +238,7 @@
                     var i = 0;
                     newList = newList.concat(oldList);
 
+                    //very similar to connect partner
                     for (; !inOldSesh && (i < this.state.oldSessions.length); i++) {
                         if (data.partner === this.state.oldSessions[i].partner){
                             inOldSesh = true;
@@ -259,6 +254,7 @@
                     }//if else
                 }//setThisPartner
 
+                //Gets the messages from closed boxes
                 getOldMessages(partner){
                     var messages = [];
 
@@ -276,6 +272,7 @@
                     this.setState({reconnectSeshs: array});
                 }//reconnectChat
 
+                //removes a box from the messageField
                 removeBox(data){
                     var newArray = this.state.partners;
                     var index = newArray.indexOf(data.partner);
@@ -291,6 +288,7 @@
                     var check = [];
                     var messages = [];
 
+                    //this checks the sessions that were disconnected
                     for(var i=0; i<this.state.reconnectSeshs.length; i++){
                         if(this.state.room === this.state.reconnectSeshs[i].room){
                             messages = this.state.reconnectSeshs[i].messages;
@@ -299,15 +297,22 @@
 
                     for(var i=0; i<this.state.partners.length; i++){
                         if(!check.includes(this.state.partners[i])){
+
+                            //if there were no reconnected sessions
+                            //check for old boxes from this session
                             if(messages.length<1){
                                 messages = this.getOldMessages(this.state.partners[i]);
                             }//if
+
                             //check if messages is empty
                             //if it is, check for reconnect
                             if(messages.length<1){
                                 var data = {user: this.props.user, room: this.state.room};
                                 socket.emit('request_mess', data);
                             }//if
+
+                            //make the boxes and pass in parameters
+                            //for MessageBox to inherit
                             items.push(
                                 <MessageBox key={this.state.partners[i]}
                                 partner={this.state.partners[i]}
@@ -316,6 +321,9 @@
                                 room={this.state.room}
                                 socket={io.connect()} />
                             );
+
+                            //This is used to check if two of the same users are
+                            //trying to be rendered to keep the unique keys
                             check.push(this.state.partners[i]);
                         }//if
                     }//for
@@ -330,6 +338,7 @@
                     var i = 0;
                     newList = newList.concat(oldList);
 
+                    //checks to see if this was a conversation that was closed
                     for (; !inOldSesh && (i < this.state.oldSessions.length); i++) {
                         if (data.partner === this.state.oldSessions[i].partner){
                             inOldSesh = true;
@@ -337,8 +346,10 @@
                     }//for
 
                     if (!inOldSesh){
+                        //inherits from the new room if not
                         this.setState({partners: newList, room: data.room});
                     } else {
+                        //uses the old room if it was
                         var oldRoom = this.state.oldSessions[i-1].room;
                         var newData = {messages: this.state.oldSessions[i-1].messages,
                                         room: this.state.oldSessions[i-1].room};
